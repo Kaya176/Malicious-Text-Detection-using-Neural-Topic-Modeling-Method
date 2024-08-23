@@ -8,13 +8,13 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score,precision_score,recall_score
 from preprocessing import MyCustomData
 
-def clssification_train(model,train_dataset,batch_size,epochs):
+def clssification_train(model,train_dataset,batch_size,epochs,cls_tokenizer):
 
     #load data
     #input : train data & valid data
     #input type : dataframe
     #output : fine-tuned model
-    cls_tokenizer = 'google-bert/bert-base-multilingual-cased'
+    #cls_tokenizer = 'google-bert/bert-base-multilingual-cased'
     seq_len = 128
     #print(train_dataset)
     skf = StratifiedKFold(n_splits = 5,shuffle = True,random_state = 42)

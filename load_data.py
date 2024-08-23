@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 class load_data:
 
     def __init__(self,file_name,cls_ratio,test_ratio):
-        self.data_path = "./Detecting_Drug_Sales_Post/data/"
+        self.data_path = "./data/"
         self.file = pd.read_excel(self.data_path+file_name)
         #dataset
         self.train_data = None
