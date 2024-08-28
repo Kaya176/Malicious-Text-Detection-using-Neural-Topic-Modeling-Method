@@ -5,14 +5,13 @@ import math
 
 class Classification_model(nn.Module):
 
-    def __init__(self,batch_size,num_cls,seq_len,model_name = "google-bert/bert-base-multilingual-cased"):
+    def __init__(self,num_cls,seq_len,add_layer = 'lstm',model_name = "google-bert/bert-base-multilingual-cased"):
         super(Classification_model,self).__init__()
         self.num_cls = num_cls
-        self.batch_ize = batch_size
         self.seq_len = seq_len
         self.bert = AutoModel.from_pretrained(model_name)
         self.drop1 = nn.Dropout(0.1)
-
+        self.add_layer = add_layer
         #fnn layer
         self.fnn_layer = nn.Linear(self.bert.config.hidden_size*self.seq_len,256)
         #cnn layer
@@ -49,17 +48,19 @@ class Classification_model(nn.Module):
         lstm_output = lstm_output[:,-1,:]
         return lstm_output
 
-    def forward(self,input_ids,attention_mask,add_layer = None):
+    def forward(self,input_ids,attention_mask):
         x = self.bert(input_ids = input_ids,attention_mask = attention_mask)
-        x = x.last_hidden_state.transpose(1,2)
+        x = x.last_hidden_state
 
-        if add_layer == 'cnn':
+        if self.add_layer == 'cnn':
+            x = x.transpose(1,2)
             output = self.forward_cnn(x)
             output = self.cnn_to_fnn(output)
 
-        elif add_layer == 'lstm':
+        elif self.add_layer == 'lstm':
             output = self.forward_lstm(x)
         else:
+            x = x.transpose(1,2)
             x = torch.flatten(x,1)
             output = self.forward_fnn(x)
 

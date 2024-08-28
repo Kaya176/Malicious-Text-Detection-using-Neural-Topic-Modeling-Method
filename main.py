@@ -1,18 +1,21 @@
+#data
 import load_data
 from preprocessing import MyCustomData
-from transformers import AutoConfig,AutoTokenizer, AutoModel
+#topic modeling
 from sentence_transformers import SentenceTransformer
 from bertopic import BERTopic
+from topic_modeling import topic_modeling
+#classification model
 from preprocessing import MyCustomData
 from ClassificationModel import Classification_model
 from classification_model_train import clssification_train
-from topic_modeling import topic_modeling
 from classification_model_valid import cluster_decision
+from sklearn.metrics import accuracy_score,precision_score,recall_score
+#util
 from argparse import ArgumentParser
 import warnings
-from sklearn.metrics import accuracy_score,precision_score,recall_score
 warnings.filterwarnings("ignore")
-file_name = "DRUG_original_data.xlsx"
+
 #Argument parser
 parser = ArgumentParser()
 parser.add_argument("--file_name",type = str,default = "DRUG_original_data.xlsx")
@@ -27,17 +30,21 @@ parser.add_argument("--cls_tokenizer",type = str,default = "google-bert/bert-bas
 parser.add_argument("--cls_model_name",type = str,default = "google-bert/bert-base-multilingual-cased")
 args = parser.parse_args()
 
+
+#file name
+file_name = "DRUG_original_data.xlsx"
+
 #parameters
+cls_ratio = 0.2 #분류 모델에 사용할 데이터 비율(test data 제외)
+#topic_ratio = 1-cls_ratio #토픽모델링에 사용할 데이터 비율(test data 제외)
+test_ratio = 0.2 #최종적으로 테스트할 데이터 비율(전체대비)
 
-cls_ratio = 0.2
-topic_ratio = 1-cls_ratio
-test_ratio = 0.2
+batch_size = 16 #batch size
+num_cls = 2 #분류 모델의 클래스 수
+seq_len = 128 #sequence length
 
-batch_size = 16
-num_cls = 2
-seq_len = 128
+epochs = 1 #epoch
 
-epochs = 1
 #huggning face의 auto tokenizer와 auto model을 사용하였기 때문에 다른 모델로 변경 가능함.
 cls_tokenizer = "google-bert/bert-base-multilingual-cased"
 cls_model_name = "google-bert/bert-base-multilingual-cased"
@@ -53,13 +60,13 @@ test_data = dataset.get_test_data()
 #clssification model - data
 cls_train_data = MyCustomData(cls_data,cls_tokenizer,max_len = seq_len)
 #classifciation model - model
-clssification_model = Classification_model(batch_size = batch_size,num_cls = num_cls,seq_len = seq_len,model_name = cls_model_name)
+clssification_model = Classification_model(num_cls = num_cls,seq_len = seq_len,model_name = cls_model_name,add_layer='lstm')
 #topic modeling
 embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 topic_model = BERTopic(embedding_model=embedding_model)
 #clssitication model - train
 print("Start training classification model...")
-cls_fine_tuned = clssification_train(clssification_model,cls_data,batch_size,epochs=epochs)
+cls_fine_tuned = clssification_train(clssification_model,cls_data,batch_size,cls_tokenizer=cls_tokenizer,epochs=epochs)
 print("Finish training classification model...")
 #topic modeling
 print("Start topic modeling...")
@@ -89,6 +96,3 @@ print("precision : ",precision_score(test_data_cls['label'],test_data_cls['cls_r
 print("recall : ",recall_score(test_data_cls['label'],test_data_cls['cls_result']))
 print("accuracy : ",accuracy_score(test_data_cls['label'],test_data_cls['cls_result']))
 print("Finish classification model evaluation...")
-
-#readme 작성하기
-#github에 업로드하기

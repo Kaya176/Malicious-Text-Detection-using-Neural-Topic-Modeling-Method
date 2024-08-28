@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 #1. Positive와 Negative의 비율을 2:1로 맞춘다.
 #2. test data를 나눈다.
 #3. 남은 데이터는 classification data와 topic modeling data로 나눈다.
-#4. augmentation은 나중에 추가할 예정
+
 class load_data:
 
     def __init__(self,file_name,cls_ratio,test_ratio):
@@ -15,7 +15,7 @@ class load_data:
         self.cls_data = None
         self.topic_data = None
         self.Test_data = None #for final test
-        
+        self.undersampling_ratio = 2
         #do sampling
         self.file = self._sampling()
         #divide data
@@ -33,11 +33,11 @@ class load_data:
     def data_augmentation(self):
         return
     
-    def _sampling(self,ratio = 2):
+    def _sampling(self):
         positive = self.file[self.file['label']== 0]
         negative = self.file[self.file['label']== 1]
         
-        pos_sample = positive.sample(n = len(negative)*ratio)
+        pos_sample = positive.sample(n = len(negative)*self.undersampling_ratio)
         result = pd.concat([pos_sample,negative])
         result = result.sample(frac = 1)
         return result
