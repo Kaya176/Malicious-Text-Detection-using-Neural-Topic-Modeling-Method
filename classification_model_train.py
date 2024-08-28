@@ -8,7 +8,7 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score,precision_score,recall_score
 from preprocessing import MyCustomData
 
-def clssification_train(model,train_dataset,batch_size,epochs,cls_tokenizer):
+def clssification_train(model,train_dataset,batch_size,epochs,cls_tokenizer,use_kfold = True):
 
     #load data
     #input : train data & valid data
@@ -18,6 +18,10 @@ def clssification_train(model,train_dataset,batch_size,epochs,cls_tokenizer):
     seq_len = 128
     #print(train_dataset)
     skf = StratifiedKFold(n_splits = 5,shuffle = True,random_state = 42)
+    if use_kfold:
+        pass
+    else:
+        pass
     for fold,(train_data,valid_data) in enumerate(skf.split(train_dataset,train_dataset['label'])):
 
         train = train_dataset.iloc[train_data]
