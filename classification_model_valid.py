@@ -11,9 +11,9 @@ from preprocessing import MyCustomData
 #토픽 모델링의 결과를 이용하여 해당 클러스터가 정상 텍스트로 구성된 클러스터인지 마약 매매 관련 텍스트로 구성된 클러스터인지 판단하는 함수
 #모델은 이전에 학습한 모델을 이용함.
 
-def cluster_decision(topic_result,model,batch_size,is_test = False):
+def cluster_decision(topic_result,model,batch_size,cls_tokenizer,is_test = False):
     #tokenizer
-    cls_tokenizer = 'google-bert/bert-base-multilingual-cased'
+    #cls_tokenizer = 'google-bert/bert-base-multilingual-cased'
     #sequence length
     seq_len = 128#sequence length
     
