@@ -13,8 +13,6 @@ from preprocessing import MyCustomData
 
 def cluster_decision(topic_result,model,batch_size,cls_tokenizer,is_test = False):
     #tokenizer
-    #cls_tokenizer = 'google-bert/bert-base-multilingual-cased'
-    #sequence length
     seq_len = 128#sequence length
     
     topic_test = MyCustomData(topic_result,cls_tokenizer,max_len = seq_len)
@@ -34,9 +32,7 @@ def cluster_decision(topic_result,model,batch_size,cls_tokenizer,is_test = False
             out = model(input_ids,attention_mask = attention_mask)
             out = torch.sigmoid(out)
             out = out.cpu().detach().numpy()
-            #print('out 1: ',out)
             out = np.argmax(out,axis = 1)
-            #print('out 2 : ',out.tolist())
             cls_result += out.tolist()
     topic_result['cls_result'] = cls_result
     if is_test:

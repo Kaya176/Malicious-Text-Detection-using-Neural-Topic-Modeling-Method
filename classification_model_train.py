@@ -72,7 +72,6 @@ def clssification_train(model,train_dataset,batch_size,epochs,cls_tokenizer):
                     input_ids = batch['input_ids'].to(device)
                     mask = batch['attention_mask'].to(device)
                     #answer
-                    #labels += batch['label'].cpu()
                     #model prediction
                     y_pred = model(input_ids = input_ids,attention_mask = mask)
                     y_pred = y_pred.cpu().numpy()
